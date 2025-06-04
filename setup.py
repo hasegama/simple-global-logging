@@ -13,15 +13,12 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/hasegama/simple-global-logging",
     packages=find_packages(),
-    classifiers=[
+    classifiers = [
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: 3.12",
     ],
     python_requires=">=3.10",
     install_requires=[],
@@ -31,4 +28,5 @@ setup(
             "pytest-cov>=4.0",
         ],
     },
+    include_package_data=True,
 ) 
