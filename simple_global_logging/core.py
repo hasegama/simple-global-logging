@@ -95,7 +95,7 @@ def setup_logging_with_stdout_capture(verbose: bool = False, base_dir: str = "ou
         verbose: Enable debug level logging if True
         base_dir: Base directory for log files (default: "out")
         remove_ansi: Whether to remove ANSI escape sequences from log file (default: True)
-        tz: Timezone for timestamps (default: JST = UTC+9)
+        tz: Timezone for timestamps (default: UTC)
         
     Returns:
         Root logger instance
