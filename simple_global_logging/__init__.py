@@ -15,7 +15,7 @@ from simple_global_logging.core import (
 )
 
 # Version will be set during build process
-__version__ = "0.0.0.dev0"
+__version__ = "None"
 
 # Convenience exports
 __all__ = [

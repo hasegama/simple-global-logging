@@ -4,21 +4,33 @@
 import subprocess
 import re
 import sys
-import toml
+# import toml
 from pathlib import Path
 
 
 def get_git_version():
     """Get version from git tag."""
     try:
-        # Try to get version from git tag
+        # First try to get exact tag for current commit
         result = subprocess.run(
             ["git", "describe", "--tags", "--exact-match"],
             capture_output=True,
             text=True,
-            check=True
+            check=False  # Don't raise exception if no exact match
         )
-        tag = result.stdout.strip()
+        
+        if result.returncode == 0:
+            tag = result.stdout.strip()
+        else:
+            # If no exact match, get the latest tag
+            result = subprocess.run(
+                ["git", "describe", "--tags", "--abbrev=0"],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            tag = result.stdout.strip()
+            print(f"No exact tag match for current commit, using latest tag: {tag}")
         
         # Remove 'v' prefix if present (e.g., v1.0.0 -> 1.0.0)
         if tag.startswith('v'):
