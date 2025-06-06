@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "simple-global-logging"
-version = "0.0.0.dev0"
+version = "None"
 authors = [
     { name = "hasegama", email = "40445443+hasegama@users.noreply.github.com" }
 ]
