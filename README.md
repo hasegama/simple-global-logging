@@ -79,7 +79,7 @@ The library includes example scripts in the `examples/` directory:
 - `submodule.py`: Logging from different modules
 - `timezone_example.py`: Timezone configuration
 
-For pytest integration, see `conftest_template.py` in the project root.
+For pytest integration, see `conftest_template.py` in the `tests/` directory.
 
 ## Requirements
 
