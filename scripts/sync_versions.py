@@ -103,8 +103,8 @@ def main():
     
     # Set version in both files
     success = True
-    success &= set_version_in_init(version)
-    success &= set_version_in_pyproject(version)
+    success = success and set_version_in_init(version)
+    success = success and set_version_in_pyproject(version)
     
     if not success:
         sys.exit(1)
