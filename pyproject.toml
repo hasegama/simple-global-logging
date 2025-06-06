@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "simple-global-logging"
-version = "0.1.0"
+version = "0.0.0.dev0"
 authors = [
     { name = "hasegama", email = "40445443+hasegama@users.noreply.github.com" }
 ]
@@ -25,7 +25,7 @@ Homepage = "https://github.com/hasegama/simple-global-logging"
 
 [tool.setuptools.packages.find]
 include = ["simple_global_logging*"]
-exclude = ["tests*", "examples*"]
+exclude = ["tests*", "examples*", "scripts*"]
 
 [project.optional-dependencies]
 dev = [
