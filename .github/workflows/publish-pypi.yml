@@ -1,0 +1,81 @@
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+    branches: [main]
+
+jobs:
+  build:
+    name: Build distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for git describe
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+          
+      - name: Set version from git tag
+        run: |
+          python scripts/sync_versions.py
+          
+      - name: Verify version consistency
+        run: |
+          # Get the release tag version
+          RELEASE_TAG=${GITHUB_REF#refs/tags/}
+          echo "Release tag: $RELEASE_TAG"
+          
+          # Get the package version
+          PACKAGE_VERSION=$(python -c "from simple_global_logging import __version__; print(__version__)")
+          echo "Package version: $PACKAGE_VERSION"
+          
+          # Compare versions (remove 'v' prefix from tag if present)
+          TAG_VERSION=${RELEASE_TAG#v}
+          if [ "$TAG_VERSION" != "$PACKAGE_VERSION" ]; then
+            echo "Version mismatch: tag=$TAG_VERSION, package=$PACKAGE_VERSION"
+            exit 1
+          fi
+          echo "Version consistency verified: $PACKAGE_VERSION"
+          
+      - name: Build package
+        run: python -m build
+        
+      - name: Store distribution packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  pypi-publish:
+    name: Upload release to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    # Publish to PyPI only when ALL of the following conditions are met:
+    # 1. github.event.release.prerelease == false: The release is NOT marked as prerelease
+    # 2. startsWith(github.ref, 'refs/tags/'): The workflow is triggered by a tag push
+    # This ensures only stable releases from tags go to production PyPI
+    if: github.event.release.prerelease == false && startsWith(github.ref, 'refs/tags/')
+    environment: 
+      name: pypi
+      url: https://pypi.org/p/simple-global-logging
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+    
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+      
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1 

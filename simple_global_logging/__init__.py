@@ -14,7 +14,8 @@ from simple_global_logging.core import (
     get_current_timezone
 )
 
-__version__ = "0.1.0"
+# Version will be set during build process
+__version__ = "0.0.0.dev0"
 
 # Convenience exports
 __all__ = [
