@@ -201,4 +201,73 @@ class TestSimpleGlobalLogging:
         with open(log_files[0], 'r', encoding='utf-8') as f:
             content = f.read()
         
-        assert "Child logger message" in content 
+        assert "Child logger message" in content
+    
+    def test_custom_filename(self):
+        """Test logging with custom filename."""
+        custom_filename = "custom.log"
+        logger = simple_global_logging.setup_logging(base_dir=str(self.temp_dir), filename=custom_filename)
+        
+        # Log some messages
+        logging.info("First message")
+        
+        # Check that custom file was created
+        log_file = self.temp_dir / custom_filename
+        assert log_file.exists()
+        
+        with open(log_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        assert "First message" in content
+        
+        # Reset logging
+        core._logging_initialized = False
+        core._log_file_path = None
+        logging.getLogger().handlers.clear()
+        
+        # Setup logging again with same filename - should append
+        logger = simple_global_logging.setup_logging(base_dir=str(self.temp_dir), filename=custom_filename)
+        logging.info("Second message")
+        
+        # Check that both messages are in the file
+        with open(log_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        assert "First message" in content
+        assert "Second message" in content
+    
+    def test_custom_filename_with_stdout_capture(self):
+        """Test stdout capture with custom filename."""
+        custom_filename = "custom_stdout.log"
+        logger = simple_global_logging.setup_logging_with_stdout_capture(
+            base_dir=str(self.temp_dir), 
+            filename=custom_filename
+        )
+        
+        # Print and log
+        print("Printed message")
+        logging.info("Logged message")
+        
+        # Check file
+        log_file = self.temp_dir / custom_filename
+        assert log_file.exists()
+        
+        with open(log_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        assert "STDOUT: Printed message" in content
+        assert "Logged message" in content
+        
+        # Cleanup stdout capture and logging handlers
+        simple_global_logging.restore_stdout()
+        logging.getLogger().handlers.clear()
+    
+    def test_no_filename_generates_timestamped(self):
+        """Test that omitting filename still generates timestamped files."""
+        logger = simple_global_logging.setup_logging(base_dir=str(self.temp_dir))
+        
+        # Check that timestamped file was created
+        log_files = list(self.temp_dir.glob("*.log"))
+        assert len(log_files) == 1
+        
+        # Verify filename format
+        utc = timezone.utc
+        today = datetime.now(utc).strftime("%Y%m%d")
+        assert re.match(rf"{today}-\d{{7}}\.log", log_files[0].name) 
