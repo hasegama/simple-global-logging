@@ -41,11 +41,13 @@ def setup_logging(verbose: bool = False, base_dir: str = "out", tz: Optional[tim
     
     _current_timezone = tz
     
+    # Create the base directory
+    output_dir = Path(base_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
     # Use provided filename or generate a new one
     if filename:
         # Create the full path with base_dir and provided filename
-        output_dir = Path(base_dir)
-        output_dir.mkdir(parents=True, exist_ok=True)
         log_file = output_dir / filename
     else:
         # Generate log file path with timestamp

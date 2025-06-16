@@ -254,6 +254,10 @@ class TestSimpleGlobalLogging:
             content = f.read()
         assert "STDOUT: Printed message" in content
         assert "Logged message" in content
+        
+        # Cleanup stdout capture and logging handlers
+        simple_global_logging.restore_stdout()
+        logging.getLogger().handlers.clear()
     
     def test_no_filename_generates_timestamped(self):
         """Test that omitting filename still generates timestamped files."""
