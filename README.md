@@ -6,6 +6,7 @@ A simple Python logging extension library that enhances the standard logging fun
 
 - **Global Logging Setup**: Initialize once, use everywhere with standard `import logging`
 - **Automatic File Output**: Logs saved to timestamped files in `out/` directory
+- **Custom Filename Support**: Optional custom filenames with automatic append mode
 - **Standard Output Capture**: Capture console output to log files
 - **pytest Integration**: Capture pytest output via conftest.py
 - **Configurable Timezone**: All timestamps in specified timezone (default: UTC)
@@ -44,9 +45,10 @@ print("This will also be logged")
 ```python
 # Basic logging setup
 setup_logging(
-    verbose=False,  # Enable DEBUG level if True
-    base_dir="out", # Log directory
-    tz=None        # Timezone (default: UTC)
+    verbose=False,     # Enable DEBUG level if True
+    base_dir="out",    # Log directory
+    tz=None,          # Timezone (default: UTC)
+    filename=None     # Optional custom filename (default: auto-generated)
 )
 
 # With stdout capture
@@ -54,7 +56,8 @@ setup_logging_with_stdout_capture(
     verbose=False,
     base_dir="out",
     remove_ansi=True,  # Remove terminal color codes
-    tz=None
+    tz=None,
+    filename=None     # Optional custom filename (default: auto-generated)
 )
 
 # Utility functions
@@ -67,7 +70,9 @@ get_current_timezone()     # Get current timezone
 ### Log File Format
 
 - Location: `out/` directory (customizable)
-- Filename: `YYYYMMDD-0000001.log` (7-digit sequential number)
+- Filename: 
+  - Default: `YYYYMMDD-0000001.log` (7-digit sequential number)
+  - Custom: Use specified filename with append mode
 - Content: Timestamps in specified timezone
 
 ## Examples
@@ -78,6 +83,7 @@ The library includes example scripts in the `examples/` directory:
 - `stdout_capture_example.py`: Output capture
 - `submodule.py`: Logging from different modules
 - `timezone_example.py`: Timezone configuration
+- `custom_filename_example.py`: Custom filename and append mode
 
 For pytest integration, see `conftest_template.py` in the `tests/` directory.
 
