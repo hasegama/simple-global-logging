@@ -20,13 +20,15 @@ _log_file_path = None
 _current_timezone = None
 
 
-def setup_logging(verbose: bool = False, base_dir: str = "out", tz: Optional[timezone] = None) -> logging.Logger:
+def setup_logging(verbose: bool = False, base_dir: str = "out", tz: Optional[timezone] = None, filename: Optional[str] = None) -> logging.Logger:
     """Setup logging configuration for both console and file output.
     
     Args:
         verbose: Enable debug level logging if True
         base_dir: Base directory for log files (default: "out")
         tz: Timezone for timestamps (default: UTC)
+        filename: Optional specific filename for the log file. If provided, logs will be appended to this file.
+                 If not provided, a new timestamped file will be created.
         
     Returns:
         Root logger instance
@@ -39,8 +41,16 @@ def setup_logging(verbose: bool = False, base_dir: str = "out", tz: Optional[tim
     
     _current_timezone = tz
     
-    # Generate log file path
-    log_file = generate_log_filename(base_dir, tz)
+    # Use provided filename or generate a new one
+    if filename:
+        # Create the full path with base_dir and provided filename
+        output_dir = Path(base_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        log_file = output_dir / filename
+    else:
+        # Generate log file path with timestamp
+        log_file = generate_log_filename(base_dir, tz)
+    
     _log_file_path = log_file
     
     # Configure root logger
@@ -88,7 +98,7 @@ def setup_logging(verbose: bool = False, base_dir: str = "out", tz: Optional[tim
     return root_logger
 
 
-def setup_logging_with_stdout_capture(verbose: bool = False, base_dir: str = "out", remove_ansi: bool = True, tz: Optional[timezone] = None) -> logging.Logger:
+def setup_logging_with_stdout_capture(verbose: bool = False, base_dir: str = "out", remove_ansi: bool = True, tz: Optional[timezone] = None, filename: Optional[str] = None) -> logging.Logger:
     """Setup logging with stdout/stderr capture enabled.
     
     Args:
@@ -96,6 +106,8 @@ def setup_logging_with_stdout_capture(verbose: bool = False, base_dir: str = "ou
         base_dir: Base directory for log files (default: "out")
         remove_ansi: Whether to remove ANSI escape sequences from log file (default: True)
         tz: Timezone for timestamps (default: UTC)
+        filename: Optional specific filename for the log file. If provided, logs will be appended to this file.
+                 If not provided, a new timestamped file will be created.
         
     Returns:
         Root logger instance
@@ -103,7 +115,7 @@ def setup_logging_with_stdout_capture(verbose: bool = False, base_dir: str = "ou
     global _stdout_captured, _original_stdout, _original_stderr, _log_file_path
     
     # First setup regular logging
-    logger = setup_logging(verbose=verbose, base_dir=base_dir, tz=tz)
+    logger = setup_logging(verbose=verbose, base_dir=base_dir, tz=tz, filename=filename)
     
     # Setup stdout/stderr capture if not already done
     if not _stdout_captured and _log_file_path:
